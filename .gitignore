@@ -1,0 +1,13 @@
+dist/*
+build/*
+nbproject/*
+
+/*.txt
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.grab
+*.xml
