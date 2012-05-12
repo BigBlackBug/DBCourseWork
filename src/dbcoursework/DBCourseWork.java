@@ -4,41 +4,51 @@
  */
 package dbcoursework;
 
+import DAO.UserDAO;
+import gui.AdminPanel;
 import gui.LoginForm;
 import gui.UserPanel;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
+import managers.AdminLibraryManager;
+import managers.UserLibraryManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 /**
  *
  * @author BigBlackBug
  */
 public class DBCourseWork {
 
+    public static final ApplicationContext ctx;
+
+    static {
+        ctx = new ClassPathXmlApplicationContext("/springConfig.xml");
+
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        final ApplicationContext ctx = new ClassPathXmlApplicationContext("/springConfig.xml");
 
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+            System.out.println("GG");
+
+        }
 
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                UserPanel panel = (UserPanel) ctx.getBean("UserPanel");
-                LoginForm form = (LoginForm) ctx.getBean("LoginForm");
+                // UserPanel panel = (UserPanel) ctx.getBean("UserPanel");
+                UserPanel panel = new UserPanel((UserLibraryManager) ctx.getBean("UserLibraryManager"));
+                AdminPanel adminPanel = new AdminPanel((AdminLibraryManager) ctx.getBean("AdminLibraryManager"));
+                LoginForm form = new LoginForm((UserDAO) ctx.getBean("UserDAO"), panel, adminPanel);
                 form.setVisible(true);
                 form.setLocationRelativeTo(null);
-                //panel.setDocument(2);
-                JFrame jFrame = new JFrame();
-                jFrame.add(panel);
-
-                jFrame.setSize(500, 700);
-                //jFrame.setVisible(true);
-                //  panel.setVisible(true);
             }
         });
 

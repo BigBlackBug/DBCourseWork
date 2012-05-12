@@ -47,7 +47,7 @@ public class AuthorDAO extends SimpleJdbcDaoSupport implements DAO<Author> {
         List<Map<String, Object>> queryForList = getSimpleJdbcTemplate().queryForList("select * from authorship where author_id=? and isbn=?", authorId, isbn);
         if (queryForList.isEmpty()) {
             getSimpleJdbcTemplate().update("insert into authorship(author_id,isbn) values(?,?)", authorId, isbn);
-        }
+        }else throw new DuplicateKeyException("too bad");
     }
 
     public void removeBook(Integer authorId, String isbn) {

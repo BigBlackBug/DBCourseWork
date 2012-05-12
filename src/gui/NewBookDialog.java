@@ -85,12 +85,12 @@ public class NewBookDialog extends JDialog {
                     errorLabel.setText("Please select at least one author");
                     return;
                 }
-                Integer amount=(Integer) bookPanel.getAmountSpinner().getValue();
-                if(amount<=0){
+                Integer amount = (Integer) bookPanel.getAmountSpinner().getValue();
+                if (amount <= 0) {
                     errorLabel.setText("The amount should be a positive number");
                     return;
                 }
-                
+
                 BookDAO bookDAO = libraryManager.getBookDAO();
                 try {
                     bookDAO.insert(new Book(isbn, libraryManager.getPublisherDAO().findByName(pub).getPublisherId()));
@@ -105,9 +105,9 @@ public class NewBookDialog extends JDialog {
                 } catch (DataAccessException daex) {
                     errorLabel.setText("Unknown error");
                 }
-                StorageManager gam=libraryManager.getStorageManager();
+                StorageManager gam = libraryManager.getStorageManager();
                 //try{
-                gam.replenishLibrary(isbn,amount);
+                gam.replenishLibrary(isbn, amount);
                 //}
 
 

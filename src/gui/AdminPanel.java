@@ -4,28 +4,21 @@
  */
 package gui;
 
-import DAO.BookDAO;
 import beans.Author;
 import beans.Book;
 import beans.Document;
 import beans.Publisher;
 import dbcoursework.DBTableModel;
-import java.awt.Component;
-import java.awt.TrayIcon;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 import managers.AdminLibraryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 
 /**
  *
@@ -35,7 +28,7 @@ public class AdminPanel extends javax.swing.JPanel {
 
     enum TableType {
 
-        AUTHOR, BOOK, DOCUMENT, PUBLISHER, AUTHORSHIP
+        AUTHOR, BOOK, DOCUMENT, PUBLISHER, AUTHORSHIP, LIBRARY
     }
     private TableType currentType = TableType.AUTHOR;
     private DBTableModel currentModel;
@@ -54,66 +47,55 @@ public class AdminPanel extends javax.swing.JPanel {
     /**
      * Creates new form AdminPanel
      */
-    public void prepare() {
-        addBookButton.setVisible(false);
-        removeBookButton.setVisible(false);
+    public final void prepare() {
+        // addBookButton.setVisible(false);
+        //  removeBookButton.setVisible(false);
         infoListScrollPane.setVisible(false);
-        // System.g
+        infoLabel.setVisible(false);
+        newitemButton.setEnabled(true);
 
         infoListModel.clear();
         if (currentType == TableType.AUTHOR) {
-            addBookButton.setVisible(true);
-            removeBookButton.setVisible(true);
+            //    addBookButton.setVisible(true);
+            //   removeBookButton.setVisible(true);
             infoListScrollPane.setVisible(true);
+            infoLabel.setVisible(true);
+
+            infoLabel.setText("Author's books");
             prepareAuthor();
         } else if (currentType == TableType.BOOK) {
             infoListScrollPane.setVisible(true);
+            infoLabel.setVisible(true);
+            infoLabel.setText("Book's authors");
             prepareBook();
         } else if (currentType == TableType.DOCUMENT) {
             prepareDocument();
         } else if (currentType == TableType.PUBLISHER) {
             preparePublisher();
         } else if (currentType == TableType.AUTHORSHIP) {
+            newitemButton.setEnabled(false);
             prepareAuthorship();
+        } else if (currentType == TableType.LIBRARY) {
+            newitemButton.setEnabled(false);
+            prepareLibrary();
         }
         jTable1.setModel(currentModel);
         revalidate();
         repaint();
+        infoList.revalidate();
         jTable1.repaint();
     }
 
     private void prepareDocument() {
-        currentModel = new DBTableModel(adminLibraryManager.getDocumentDAO().getAllAsMap(), true, listener);
+        currentModel = new DBTableModel(adminLibraryManager.getDocumentDAO().getAllAsMap(), false, listener);
     }
 
-    /*
-     * public class BookDropDownEditor extends AbstractCellEditor implements
-     * TableCellEditor {
-     *
-     * private BookDAO bookDAO; private ArrayList<String> books; private
-     * JScrollPane component; private JList list;
-     *
-     * public BookDropDownEditor(BookDAO bookDAO) { this.bookDAO = bookDAO; list
-     * = new JList(new DefaultListModel()); component = new JScrollPane(list);
-     *
-     * }
-     *
-     * //Implement the one CellEditor method that AbstractCellEditor doesn't.
-     * @Override public Object getCellEditorValue() { if (!books.isEmpty()) {
-     * return books.get(0); } else { return ""; } }
-     *
-     * //Implement the one method defined by TableCellEditor. @Override public
-     * Component getTableCellEditorComponent(JTable table, Object value, boolean
-     * isSelected, int row, int column) { DefaultListModel model =
-     * (DefaultListModel) list.getModel(); model.clear();
-     * System.out.println("log"); List<Author> authors =
-     * bookDAO.getAuthorsOf((String) table.getModel().getValueAt(row, 0)); for
-     * (Author a : authors) { model.addElement(a.getName()); }
-     *
-     * return component; } }
-     */
+    private void prepareLibrary() {
+        currentModel = new DBTableModel(adminLibraryManager.getStorageManager().getAllEntriesAsMap(), false, listener);
+    }
+
     private void prepareBook() {
-        currentModel = new DBTableModel(adminLibraryManager.getBookDAO().getAllAsMap(), true, listener);
+        currentModel = new DBTableModel(adminLibraryManager.getBookDAO().getAllAsMap(), false, listener);
 
         //  jTable1.getColumnModel().getColumn(1).setCellEditor(new JScrollTableEditor());
         // TableColumn sportColumn = jTable1.getColumnModel().getColumn(jTable1.getColumnCount()-1);
@@ -123,12 +105,12 @@ public class AdminPanel extends javax.swing.JPanel {
     }
 
     private void preparePublisher() {
-        currentModel = new DBTableModel(adminLibraryManager.getPublisherDAO().getAllAsMap(), true, listener);
+        currentModel = new DBTableModel(adminLibraryManager.getPublisherDAO().getAllAsMap(), false, listener);
     }
 
     private void prepareAuthor() {
         //jTable1.setModel(new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), false));
-        currentModel = new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), true, listener);
+        currentModel = new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), false, listener);
     }
 
     private void prepareAuthorship() {
@@ -209,21 +191,7 @@ public class AdminPanel extends javax.swing.JPanel {
 
             }
         });
-        tableComboBox.setModel(new DefaultComboBoxModel((TableType.values())));
 
-        tableComboBox.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    // String selectedItem = e.getItem().toString();
-                    //System.out.println(selectedItem);
-                    TableType type = (TableType) e.getItem();
-                    currentType = type;
-                    prepare();
-                }
-            }
-        });
 
 
     }
@@ -321,12 +289,11 @@ public class AdminPanel extends javax.swing.JPanel {
         prepare();
     }
 
-    public AdminPanel() {
+    public AdminPanel(AdminLibraryManager adminLibraryManager) {
+        this.adminLibraryManager = adminLibraryManager;
         initComponents();
         initComponents2();
-        //  prepare();
-
-
+        prepare();
     }
 
     /**
@@ -340,15 +307,19 @@ public class AdminPanel extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        tableComboBox = new javax.swing.JComboBox();
+        newitemButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
+        deleteItemButton = new javax.swing.JButton();
         errorLabel = new javax.swing.JLabel();
-        addBookButton = new javax.swing.JButton();
-        removeBookButton = new javax.swing.JButton();
         infoListScrollPane = new javax.swing.JScrollPane();
         infoList = new javax.swing.JList();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        infoLabel = new javax.swing.JLabel();
+        jButton10 = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -363,46 +334,29 @@ public class AdminPanel extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setText("new");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        newitemButton.setText("new");
+        newitemButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                newitemButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("update");
-        jButton2.setEnabled(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        updateButton.setText("update");
+        updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                updateButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("delete");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        deleteItemButton.setText("delete");
+        deleteItemButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                deleteItemButtonActionPerformed(evt);
             }
         });
-
-        tableComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         errorLabel.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         errorLabel.setForeground(new java.awt.Color(0, 51, 204));
-
-        addBookButton.setText("add book");
-        addBookButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addBookButtonActionPerformed(evt);
-            }
-        });
-
-        removeBookButton.setText("remove book");
-        removeBookButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeBookButtonActionPerformed(evt);
-            }
-        });
 
         infoList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -411,125 +365,188 @@ public class AdminPanel extends javax.swing.JPanel {
         });
         infoListScrollPane.setViewportView(infoList);
 
+        jButton4.setText("book");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("author");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("pub");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton7.setText("doc");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jButton8.setText("ship");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        infoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        infoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jButton10.setText("lib");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(addBookButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(removeBookButton, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(14, 14, 14)
-                                .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 210, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tableComboBox, 0, 393, Short.MAX_VALUE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
+                            .addComponent(infoListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                            .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(newitemButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteItemButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(updateButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
-                    .addComponent(infoListScrollPane))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(tableComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(infoListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                    .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(addBookButton)
-                            .addComponent(removeBookButton))
-                        .addGap(0, 65, Short.MAX_VALUE)))
+                        .addComponent(newitemButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteItemButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(updateButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void newitemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newitemButtonActionPerformed
         newItemListener();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_newitemButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void deleteItemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteItemButtonActionPerformed
         deleteItemListener();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_deleteItemButtonActionPerformed
 
-    private void addBookButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBookButtonActionPerformed
-        int selectedRow = -1;
-        if (jTable1.getSelectedRowCount() == 0) {
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        currentType = TableType.BOOK;
+        prepare();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        currentType = TableType.AUTHOR;
+        prepare();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        currentType = TableType.PUBLISHER;
+        prepare();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        currentType = TableType.DOCUMENT;
+        prepare();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        currentType = TableType.AUTHORSHIP;
+        prepare();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
             errorLabel.setText("select a row");
             return;
         } else {
-            selectedRow = jTable1.getSelectedRow();
+            errorLabel.setText("");
+        }
+        int realRow = jTable1.convertRowIndexToModel(selectedRow);
+        String[] get = currentModel.getData().get(realRow);
+
+        if (currentType == TableType.BOOK) {
+
+            new UpdateBookDialog(adminLibraryManager, this, get[0]).setVisible(true);
+        } else if (currentType == TableType.AUTHOR) {
+            new UpdateAuthorDialog(adminLibraryManager, this, Integer.parseInt(get[0])).setVisible(true);
         }
 
-        List<Book> all = adminLibraryManager.getBookDAO().getAll(); //.toArray(values);
-        String[] values = new String[all.size()];
-        for (int i = 0; i < all.size(); i++) {
-            values[i] = all.get(i).getIsbn();
-        }
-        String result = (String) JOptionPane.showInputDialog(jTable1, "message",
-                "title", JOptionPane.INFORMATION_MESSAGE, null, values, values[0]);
-        adminLibraryManager.getAuthorDAO().addBook(Integer.parseInt(currentModel.getLine(selectedRow)[0]), result);
+    }//GEN-LAST:event_updateButtonActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        currentType = TableType.LIBRARY;
         prepare();
-
-    }//GEN-LAST:event_addBookButtonActionPerformed
-
-    private void removeBookButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeBookButtonActionPerformed
-        int selectedRow = -1;
-        if (jTable1.getSelectedRowCount() == 0) {
-            errorLabel.setText("select a row");
-            return;
-        } else {
-            selectedRow = jTable1.getSelectedRow();
-        }
-
-        List<Book> all = adminLibraryManager.getBookDAO().getAll(); //.toArray(values);
-        String[] values = new String[all.size()];
-        for (int i = 0; i < all.size(); i++) {
-            values[i] = all.get(i).getIsbn();
-        }
-        String result = (String) JOptionPane.showInputDialog(jTable1, "Select a book",
-                "", JOptionPane.INFORMATION_MESSAGE, null, values, values[0]);
-        adminLibraryManager.getAuthorDAO().removeBook(Integer.parseInt(currentModel.getLine(selectedRow)[0]), result);
-        prepare();
-
-    }//GEN-LAST:event_removeBookButtonActionPerformed
+    }//GEN-LAST:event_jButton10ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addBookButton;
+    private javax.swing.JButton deleteItemButton;
     private javax.swing.JLabel errorLabel;
+    private javax.swing.JLabel infoLabel;
     private javax.swing.JList infoList;
     private javax.swing.JScrollPane infoListScrollPane;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JButton removeBookButton;
-    private javax.swing.JComboBox tableComboBox;
+    private javax.swing.JButton newitemButton;
+    private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
 }

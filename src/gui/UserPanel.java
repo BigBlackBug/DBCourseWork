@@ -266,9 +266,8 @@ public class UserPanel extends javax.swing.JPanel {
          * setAmountButton.addActionListener(new ActionListener() {
          *
          * @Override public void actionPerformed(ActionEvent e) { amount =
-         * Integer.parseInt(amountTF.getText()); }
-        });
-         */
+         * Integer.parseInt(amountTF.getText()); } });
+         */        errorLabel.setText("");
         try {
             String isbn = tableModel.getValueAt(selectedRow, 0).toString();
             libraryManager.giveBook(document, isbn, amount);
@@ -278,28 +277,29 @@ public class UserPanel extends javax.swing.JPanel {
         }
         tableModel.setData(libraryManager.getAllStorageEntriesAsMap());
         document = -1;
+
     }//GEN-LAST:event_giveBookButtonActionPerformed
 
     private void returnBookButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnBookButtonActionPerformed
         /*
          * int selectedRow = -1; if (jTable1.getSelectedRowCount() == 0) {
          * errorLabel.setText("select a row"); return; } else { selectedRow =
-         * jTable1.getSelectedRow();
-        }
+         * jTable1.getSelectedRow(); }
          */
-        if(document==-1){
-             errorLabel.setText("select a user");
+        if (document == -1) {
+            errorLabel.setText("select a user");
             return;
         }
         // setMode(!userMode);
-       int selectedRow = -1;
+        int selectedRow = -1;
         if (jTable1.getSelectedRowCount() == 0) {
             errorLabel.setText("select a row");
             return;
         } else {
             selectedRow = jTable1.getSelectedRow();
         }
-      //  new SelectUserDialog(libraryManager.getDocumentDAO(), this, userMode).setVisible(true);
+        errorLabel.setText("");
+        //  new SelectUserDialog(libraryManager.getDocumentDAO(), this, userMode).setVisible(true);
         int amount;
         try {
             amount = Integer.parseInt(JOptionPane.showInputDialog("amount"));
@@ -314,9 +314,9 @@ public class UserPanel extends javax.swing.JPanel {
         } catch (RuntimeException ex) {
             errorLabel.setText(ex.getMessage());
         }
-       // tableModel.setData(libraryManager.getAllStorageEntriesAsMap());
+        // tableModel.setData(libraryManager.getAllStorageEntriesAsMap());
         reload(userMode);
-      //  document = -1;
+        //  document = -1;
     }//GEN-LAST:event_returnBookButtonActionPerformed
 
     private void selectUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectUserButtonActionPerformed
@@ -335,7 +335,7 @@ public class UserPanel extends javax.swing.JPanel {
             // userInputTF.setVisible(false);
             // jScrollPane2.setVisible(false);
             reload(true);
-           // if(document==-1)tableModel.clear();
+            // if(document==-1)tableModel.clear();
         } else {
             /*
              * modeToggleButton.setSelected(false);

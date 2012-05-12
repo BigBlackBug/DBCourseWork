@@ -39,6 +39,15 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
         //}
         //getSimpleJdbcTemplate().update("update book set isbn=?", args);
     }
+    public void deleteAuthor(String isbn,Integer authorID){
+        getSimpleJdbcTemplate().update("delete from authorship where isbn=? and author_id=?",isbn,authorID);
+    }
+    public void deleteAllAuthors(String isbn){
+        List<Author> authorsOf = getAuthorsOf(isbn);
+        for(Author a:authorsOf){
+            deleteAuthor(isbn, a.getID());
+        }
+    }
 
     public List<Author> getAuthorsOf(String isbn){
         return getSimpleJdbcTemplate().query("select author.author_id,author.author_name "

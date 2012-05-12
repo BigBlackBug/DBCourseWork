@@ -51,6 +51,7 @@ public class AdminLibraryManager extends SimpleJdbcDaoSupport {
     public List<Map<String, Object>> getAuthorship() {
         return getSimpleJdbcTemplate().queryForList("select * from authorship");
     }
+    //public void updateAuthors
 
     public PublisherDAO getPublisherDAO() {
         //sert
