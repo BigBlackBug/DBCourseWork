@@ -23,7 +23,8 @@ public class StorageManager extends SimpleJdbcDaoSupport {
     public List<LibraryEntry> getAllEntries() {
         return getSimpleJdbcTemplate().query("select * from library", new LibraryEntryMapper());
     }
-    public List<Map<String,Object>> getAllEntriesAsMap() {
+
+    public List<Map<String, Object>> getAllEntriesAsMap() {
         return getSimpleJdbcTemplate().queryForList("select * from library");
     }
 
@@ -35,11 +36,13 @@ public class StorageManager extends SimpleJdbcDaoSupport {
             getSimpleJdbcTemplate().update("insert into library values(?,?)", isbn, amount);
         }
     }
-     public List<LibraryEntry> filter(String isbn) {
+
+    public List<LibraryEntry> filter(String isbn) {
         return getSimpleJdbcTemplate().query(String.format("select * from library where char(isbn) like '%s", isbn) + "%'",
                 new LibraryEntryMapper());
     }
-     public List<Map<String,Object>> filterAsMap(String isbn) {
+
+    public List<Map<String, Object>> filterAsMap(String isbn) {
         return getSimpleJdbcTemplate().queryForList(String.format("select * from library where char(isbn) like '%s", isbn) + "%'");
     }
 
@@ -47,6 +50,10 @@ public class StorageManager extends SimpleJdbcDaoSupport {
         for (String key : libraryEntries.keySet()) {
             replenishLibrary(key, libraryEntries.get(key));
         }
+    }
+
+    public void withdrawAll(String isbn) {
+        getSimpleJdbcTemplate().update("delete from library where isbn=?", isbn);
     }
 
     public void withdraw(String isbn, int amount) {

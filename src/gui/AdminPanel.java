@@ -52,7 +52,8 @@ public class AdminPanel extends javax.swing.JPanel {
         //  removeBookButton.setVisible(false);
         infoListScrollPane.setVisible(false);
         infoLabel.setVisible(false);
-        newitemButton.setEnabled(true);
+        newitemButton.setEnabled(true);deleteItemButton.setEnabled(true);
+            updateButton.setEnabled(true);
 
         infoListModel.clear();
         if (currentType == TableType.AUTHOR) {
@@ -74,6 +75,8 @@ public class AdminPanel extends javax.swing.JPanel {
             preparePublisher();
         } else if (currentType == TableType.AUTHORSHIP) {
             newitemButton.setEnabled(false);
+            deleteItemButton.setEnabled(false);
+            updateButton.setEnabled(false);
             prepareAuthorship();
         } else if (currentType == TableType.LIBRARY) {
             newitemButton.setEnabled(false);
@@ -524,6 +527,8 @@ public class AdminPanel extends javax.swing.JPanel {
             new UpdateBookDialog(adminLibraryManager, this, get[0]).setVisible(true);
         } else if (currentType == TableType.AUTHOR) {
             new UpdateAuthorDialog(adminLibraryManager, this, Integer.parseInt(get[0])).setVisible(true);
+        } else if(currentType==TableType.LIBRARY){
+            
         }
 
     }//GEN-LAST:event_updateButtonActionPerformed
