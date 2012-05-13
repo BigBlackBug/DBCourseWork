@@ -24,7 +24,7 @@ public class GiveAwayManager extends SimpleJdbcDaoSupport {
         } else if (existingAmount == amount) {
             getSimpleJdbcTemplate().update("delete from library where isbn=?", isbn);
         } else {
-            throw new RuntimeException("not enough books available");
+            throw new RuntimeException("You've requested too many books");
         }
         if (getSimpleJdbcTemplate().query("select * from giveaway where document_id=? and isbn=?",
                 new GiveAwayEntryMapper(), documentID, isbn).isEmpty()) {

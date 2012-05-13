@@ -27,9 +27,9 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="setUserButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="userInputTF" min="-2" pref="23" max="-2" attributes="0"/>
+              <Component id="userInputTF" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane2" pref="252" max="32767" attributes="0"/>
+              <Component id="jScrollPane2" pref="247" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="errorLabel" min="-2" pref="23" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -58,6 +58,7 @@
                 <StringItem index="4" value="Item 5"/>
               </StringArray>
             </Property>
+            <Property name="selectionMode" type="int" value="0"/>
           </Properties>
         </Component>
       </SubComponents>

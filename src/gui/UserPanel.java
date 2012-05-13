@@ -154,6 +154,7 @@ public class UserPanel extends javax.swing.JPanel {
         modeToggleButton = new javax.swing.JToggleButton();
         userInputTF = new javax.swing.JTextField();
         infoLabel = new javax.swing.JLabel();
+        currentUserLabel = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -166,6 +167,7 @@ public class UserPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setFillsViewportHeight(true);
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jTable1);
 
@@ -204,45 +206,51 @@ public class UserPanel extends javax.swing.JPanel {
         infoLabel.setBackground(new java.awt.Color(235, 235, 235));
         infoLabel.setOpaque(true);
 
+        currentUserLabel.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
+        currentUserLabel.setForeground(new java.awt.Color(0, 102, 153));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 489, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(giveBookButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(infoLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(infoLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(returnBookButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(giveBookButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(modeToggleButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                     .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(modeToggleButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
-                    .addComponent(returnBookButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(userInputTF, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(selectUserButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(currentUserLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(userInputTF)
+                    .addComponent(selectUserButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(modeToggleButton)
+                        .addComponent(modeToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(giveBookButton)
+                        .addComponent(giveBookButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(returnBookButton)
+                        .addComponent(returnBookButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(userInputTF, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(userInputTF, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selectUserButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(currentUserLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(54, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -255,6 +263,10 @@ public class UserPanel extends javax.swing.JPanel {
             selectedRow = jTable1.getSelectedRow();
         }
         new SelectUserDialog(libraryManager.getDocumentDAO(), this, userMode).setVisible(true);
+        if (document == -1) {
+            errorLabel.setText("select a user");
+            return;
+        }
         int amount;
         try {
             amount = Integer.parseInt(JOptionPane.showInputDialog("amount"));
@@ -267,7 +279,7 @@ public class UserPanel extends javax.swing.JPanel {
          *
          * @Override public void actionPerformed(ActionEvent e) { amount =
          * Integer.parseInt(amountTF.getText()); } });
-         */        errorLabel.setText("");
+         */ errorLabel.setText("");
         try {
             String isbn = tableModel.getValueAt(selectedRow, 0).toString();
             libraryManager.giveBook(document, isbn, amount);
@@ -316,11 +328,13 @@ public class UserPanel extends javax.swing.JPanel {
         }
         // tableModel.setData(libraryManager.getAllStorageEntriesAsMap());
         reload(userMode);
+        currentUserLabel.setText(libraryManager.getDocumentDAO().findById(document).name);
         //  document = -1;
     }//GEN-LAST:event_returnBookButtonActionPerformed
 
     private void selectUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectUserButtonActionPerformed
         new SelectUserDialog(libraryManager.getDocumentDAO(), this, userMode).setVisible(true);
+        currentUserLabel.setText(libraryManager.getDocumentDAO().findById(document).name);
         // System.out.println(document);
         //reload(userMode);
     }//GEN-LAST:event_selectUserButtonActionPerformed
@@ -330,6 +344,9 @@ public class UserPanel extends javax.swing.JPanel {
         if (modeToggleButton.isSelected()) {
             //modeToggleButton.setSelected(true);
             modeToggleButton.setText("User mode");
+            if (document != -1) {
+                currentUserLabel.setText(libraryManager.getDocumentDAO().findById(document).name);
+            }
             // giveBookButton.setVisible(false);
             // acceptBookButton.setVisible(false);
             // userInputTF.setVisible(false);
@@ -342,12 +359,14 @@ public class UserPanel extends javax.swing.JPanel {
              * giveBookButton.setVisible(true);
              * acceptBookButton.setVisible(true); userInputTF.setVisible(true);
              */
+            currentUserLabel.setText("");
             //  jScrollPane2.setVisible(true);
             reload(false);
             modeToggleButton.setText("Library mode");
         }
     }//GEN-LAST:event_modeToggleButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel currentUserLabel;
     private javax.swing.JLabel errorLabel;
     private javax.swing.JButton giveBookButton;
     private javax.swing.JLabel infoLabel;

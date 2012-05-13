@@ -4,6 +4,9 @@
  */
 package gui;
 
+import javax.swing.JDialog;
+import managers.AdminLibraryManager;
+
 /**
  *
  * @author BigBlackBug
@@ -11,6 +14,9 @@ package gui;
 public class UpdateLibraryPanel extends javax.swing.JPanel {
 
     private String isbn;
+    private AdminLibraryManager adminLibraryManager;
+    private JDialog parent;
+    AdminPanel adminPanel;
 
     public String getIsbn() {
         return isbn;
@@ -19,10 +25,14 @@ public class UpdateLibraryPanel extends javax.swing.JPanel {
     /**
      * Creates new form UpdateLibraryPanel
      */
-    public UpdateLibraryPanel(String isbn) {
+    public UpdateLibraryPanel(String isbn, AdminPanel adminPanel, AdminLibraryManager adminLibraryManager, JDialog parent) {
+        this.parent = parent;
         this.isbn = isbn;
-        isbnLabel.setText(isbn);
+        this.adminPanel = adminPanel;
+        this.adminLibraryManager = adminLibraryManager;
+
         initComponents();
+        isbnLabel.setText(isbn);
     }
 
     /**
@@ -38,6 +48,7 @@ public class UpdateLibraryPanel extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
         amountSpinner = new javax.swing.JSpinner();
         isbnLabel = new javax.swing.JLabel();
+        infoLabel = new javax.swing.JLabel();
 
         jButton1.setText("withdraw");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -48,6 +59,13 @@ public class UpdateLibraryPanel extends javax.swing.JPanel {
 
         jButton2.setText("fill");
         jButton2.setActionCommand("");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        isbnLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -55,15 +73,16 @@ public class UpdateLibraryPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(isbnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(isbnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                            .addComponent(amountSpinner)))
+                    .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -73,19 +92,44 @@ public class UpdateLibraryPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(amountSpinner)
                     .addComponent(isbnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        infoLabel.setText("");
+        Integer amount = (Integer) amountSpinner.getValue();
+        if (amount <= 0) {
+            infoLabel.setText("the amount has to a positive number");revalidate();
+            return;
+        }
+        adminLibraryManager.getStorageManager().withdraw(isbn, amount);
+        adminPanel.prepare();
+        parent.setVisible(false);
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        infoLabel.setText("");
+        Integer amount = (Integer) amountSpinner.getValue();
+        if (amount <= 0) {
+            infoLabel.setText("the amount has to a positive number");
+            revalidate();
+            return;
+        }
+        adminLibraryManager.getStorageManager().replenishLibrary(isbn, amount);
+        adminPanel.prepare();
+        parent.setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner amountSpinner;
+    private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel isbnLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

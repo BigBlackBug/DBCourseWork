@@ -6,6 +6,7 @@ package DAO;
 
 import beans.Author;
 import beans.Book;
+import beans.Document;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -39,22 +40,30 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
         //}
         //getSimpleJdbcTemplate().update("update book set isbn=?", args);
     }
-    public void deleteAuthor(String isbn,Integer authorID){
-        getSimpleJdbcTemplate().update("delete from authorship where isbn=? and author_id=?",isbn,authorID);
+
+    public void deleteAuthor(String isbn, Integer authorID) {
+        getSimpleJdbcTemplate().update("delete from authorship where isbn=? and author_id=?", isbn, authorID);
     }
-    public void deleteAllAuthors(String isbn){
+
+    public void deleteAllAuthors(String isbn) {
         List<Author> authorsOf = getAuthorsOf(isbn);
-        for(Author a:authorsOf){
+        for (Author a : authorsOf) {
             deleteAuthor(isbn, a.getID());
         }
     }
 
-    public List<Author> getAuthorsOf(String isbn){
+    public List<Book> filter(String name) {
+        return getSimpleJdbcTemplate().query(String.format("select * from book where char(isbn) like '%s", name) + "%'",
+                new BookMapper());
+    }
+
+    public List<Author> getAuthorsOf(String isbn) {
         return getSimpleJdbcTemplate().query("select author.author_id,author.author_name "
                 + "from author join authorship on authorship.author_id=author.author_id "
-                + "where isbn=?", 
-                new AuthorDAO.AuthorMapper(),isbn);
+                + "where isbn=?",
+                new AuthorDAO.AuthorMapper(), isbn);
     }
+
     @Override
     public void delete(Object id) {
         getSimpleJdbcTemplate().update("delete from book where isbn=?", id);
@@ -75,7 +84,6 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
         return getSimpleJdbcTemplate().query("select * from book", new BookMapper());
     }
 
-
     @Override
     public List<Map<String, Object>> executeQuery(String query) {
         String queryUpperCase = query.toUpperCase();
@@ -88,7 +96,7 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
 
     @Override
     public List<Map<String, Object>> getAllAsMap() {
-       return getSimpleJdbcTemplate().queryForList("select * from book");
+        return getSimpleJdbcTemplate().queryForList("select * from book");
     }
 
     public static final class BookMapper implements RowMapper<Book> {

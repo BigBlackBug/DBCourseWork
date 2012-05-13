@@ -9,6 +9,7 @@ import beans.Book;
 import beans.Document;
 import beans.Publisher;
 import dbcoursework.DBTableModel;
+import java.awt.Dialog;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -25,9 +26,9 @@ import org.springframework.dao.DuplicateKeyException;
  * @author BigBlackBug
  */
 public class AdminPanel extends javax.swing.JPanel {
-
+    
     enum TableType {
-
+        
         AUTHOR, BOOK, DOCUMENT, PUBLISHER, AUTHORSHIP, LIBRARY
     }
     private TableType currentType = TableType.AUTHOR;
@@ -35,11 +36,11 @@ public class AdminPanel extends javax.swing.JPanel {
     private DefaultListModel<String> infoListModel;
     @Autowired
     private AdminLibraryManager adminLibraryManager;
-
+    
     public AdminLibraryManager getAdminLibraryManager() {
         return adminLibraryManager;
     }
-
+    
     public void setAdminLibraryManager(AdminLibraryManager adminLibraryManager) {
         this.adminLibraryManager = adminLibraryManager;
     }
@@ -52,16 +53,17 @@ public class AdminPanel extends javax.swing.JPanel {
         //  removeBookButton.setVisible(false);
         infoListScrollPane.setVisible(false);
         infoLabel.setVisible(false);
-        newitemButton.setEnabled(true);deleteItemButton.setEnabled(true);
-            updateButton.setEnabled(true);
-
+        newitemButton.setEnabled(true);
+        deleteItemButton.setEnabled(true);
+        updateButton.setEnabled(true);
+        
         infoListModel.clear();
         if (currentType == TableType.AUTHOR) {
             //    addBookButton.setVisible(true);
             //   removeBookButton.setVisible(true);
             infoListScrollPane.setVisible(true);
             infoLabel.setVisible(true);
-
+            
             infoLabel.setText("Author's books");
             prepareAuthor();
         } else if (currentType == TableType.BOOK) {
@@ -79,24 +81,25 @@ public class AdminPanel extends javax.swing.JPanel {
             updateButton.setEnabled(false);
             prepareAuthorship();
         } else if (currentType == TableType.LIBRARY) {
-            newitemButton.setEnabled(false);
+            // newitemButton.setEnabled(false);
             prepareLibrary();
         }
         jTable1.setModel(currentModel);
-        revalidate();
+        //revalidate();
+        validate();
         repaint();
         infoList.revalidate();
         jTable1.repaint();
     }
-
+    
     private void prepareDocument() {
         currentModel = new DBTableModel(adminLibraryManager.getDocumentDAO().getAllAsMap(), false, listener);
     }
-
+    
     private void prepareLibrary() {
         currentModel = new DBTableModel(adminLibraryManager.getStorageManager().getAllEntriesAsMap(), false, listener);
     }
-
+    
     private void prepareBook() {
         currentModel = new DBTableModel(adminLibraryManager.getBookDAO().getAllAsMap(), false, listener);
 
@@ -106,23 +109,23 @@ public class AdminPanel extends javax.swing.JPanel {
         // JComboBox<String> combo=new JComboBox<>(adminLibraryManager.getBookDAO().getAuthorsOf(TOOL_TIP_TEXT_KEY));
         //sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
     }
-
+    
     private void preparePublisher() {
         currentModel = new DBTableModel(adminLibraryManager.getPublisherDAO().getAllAsMap(), false, listener);
     }
-
+    
     private void prepareAuthor() {
         //jTable1.setModel(new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), false));
         currentModel = new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), false, listener);
     }
-
+    
     private void prepareAuthorship() {
         //jTable1.setModel(new DBTableModel(adminLibraryManager.getAuthorDAO().getAllAsMap(), false));
         currentModel = new DBTableModel(adminLibraryManager.getAuthorship(), false);
     }
-
+    
     private final class MyTableModelListener implements TableModelListener {
-
+        
         @Override
         public void tableChanged(TableModelEvent e) {
             System.out.println("updating");
@@ -135,24 +138,24 @@ public class AdminPanel extends javax.swing.JPanel {
                 update(i);
             }
             prepare();
-
+            
         }
     }
     private final MyTableModelListener listener = new MyTableModelListener();
-
+    
     private void initComponents2() {
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         infoListModel = new DefaultListModel<String>();
         //infoList.setModel(new DefaultListModel());
         infoList.setModel(infoListModel);
         jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
+            
             @Override
             public void valueChanged(ListSelectionEvent e) {
-
+                
                 System.out.println("HERE");
                 ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-
+                
                 int firstIndex = e.getFirstIndex();
                 int lastIndex = e.getLastIndex();
                 boolean isAdjusting = e.getValueIsAdjusting();
@@ -183,7 +186,7 @@ public class AdminPanel extends javax.swing.JPanel {
                                 for (Author a : authors) {
                                     infoListModel.addElement(a.getName());
                                 }
-
+                                
                             }
                             //}
                         }
@@ -194,11 +197,11 @@ public class AdminPanel extends javax.swing.JPanel {
 
             }
         });
-
-
-
+        
+        
+        
     }
-
+    
     private void update(int row) {
         String[] line = currentModel.getLine(row);
         try {
@@ -230,19 +233,23 @@ public class AdminPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "DataIntegrityViolationException");
         }
     }
-
+    
     private void newItemListener() {
         if (currentType == TableType.AUTHOR) {
             new NewAuthorDialog(adminLibraryManager.getAuthorDAO()).setVisible(true);
         } else if (currentType == TableType.BOOK) {
             new NewBookDialog(adminLibraryManager, this).setVisible(true);
-
+            
         } else if (currentType == TableType.DOCUMENT) {
             new NewDocumentDialog(adminLibraryManager.getDocumentDAO()).setVisible(true);
-
+            
         } else if (currentType == TableType.PUBLISHER) {
             new NewPublisherDialog(adminLibraryManager.getPublisherDAO()).setVisible(true);
+        } else if (currentType == TableType.LIBRARY) {
+            JDialog d = new JDialog();
+            prepareAndShowDialog(d, new NewLibraryItemPanel(this, adminLibraryManager, d));
         }
+        
         prepare();
     }
 
@@ -275,7 +282,7 @@ public class AdminPanel extends javax.swing.JPanel {
             } catch (DataIntegrityViolationException dex) {
                 errorLabel.setText("this book is in use");
             }
-
+            
         } else if (currentType == TableType.DOCUMENT) {
             try {
                 adminLibraryManager.getDocumentDAO().delete(get[0]);
@@ -288,15 +295,26 @@ public class AdminPanel extends javax.swing.JPanel {
             } catch (DataIntegrityViolationException dex) {
                 errorLabel.setText("this publisher is in use");
             }
+        } else if (currentType == TableType.LIBRARY) {
+            adminLibraryManager.getStorageManager().withdrawAll(get[0]);
         }
         prepare();
     }
-
+    
     public AdminPanel(AdminLibraryManager adminLibraryManager) {
         this.adminLibraryManager = adminLibraryManager;
         initComponents();
         initComponents2();
         prepare();
+    }
+    
+    private static void prepareAndShowDialog(JDialog d, JPanel panel) {
+        
+        d.setLocationRelativeTo(null);
+        d.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        d.getContentPane().add(panel);
+        d.pack();
+        d.setVisible(true);
     }
 
     /**
@@ -335,6 +353,7 @@ public class AdminPanel extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(jTable1);
 
         newitemButton.setText("new");
@@ -428,18 +447,18 @@ public class AdminPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(infoListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
-                            .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(newitemButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(deleteItemButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(updateButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(infoListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -448,69 +467,68 @@ public class AdminPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(infoListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(infoListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(newitemButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteItemButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(updateButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(updateButton)))
+                .addContainerGap(3, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void newitemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newitemButtonActionPerformed
         newItemListener();
     }//GEN-LAST:event_newitemButtonActionPerformed
-
+    
     private void deleteItemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteItemButtonActionPerformed
         deleteItemListener();
     }//GEN-LAST:event_deleteItemButtonActionPerformed
-
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         currentType = TableType.BOOK;
         prepare();
     }//GEN-LAST:event_jButton4ActionPerformed
-
+    
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         currentType = TableType.AUTHOR;
         prepare();
     }//GEN-LAST:event_jButton5ActionPerformed
-
+    
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         currentType = TableType.PUBLISHER;
         prepare();
     }//GEN-LAST:event_jButton6ActionPerformed
-
+    
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         currentType = TableType.DOCUMENT;
         prepare();
     }//GEN-LAST:event_jButton7ActionPerformed
-
+    
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         currentType = TableType.AUTHORSHIP;
         prepare();
     }//GEN-LAST:event_jButton8ActionPerformed
-
+    
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
@@ -521,18 +539,26 @@ public class AdminPanel extends javax.swing.JPanel {
         }
         int realRow = jTable1.convertRowIndexToModel(selectedRow);
         String[] get = currentModel.getData().get(realRow);
-
+        
         if (currentType == TableType.BOOK) {
-
+            
             new UpdateBookDialog(adminLibraryManager, this, get[0]).setVisible(true);
         } else if (currentType == TableType.AUTHOR) {
             new UpdateAuthorDialog(adminLibraryManager, this, Integer.parseInt(get[0])).setVisible(true);
-        } else if(currentType==TableType.LIBRARY){
+        } else if (currentType == TableType.LIBRARY) {
+            /*
+             * JDialog d = new JDialog(); d.setLocationRelativeTo(null);
+             * d.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+             * d.getContentPane().add(new UpdateLibraryPanel(get[0], this,
+             * adminLibraryManager, d)); d.pack(); d.setVisible(true);
+             */
+            JDialog d = new JDialog();
+            prepareAndShowDialog(d, new UpdateLibraryPanel(get[0], this, adminLibraryManager, d));
             
         }
-
+        
     }//GEN-LAST:event_updateButtonActionPerformed
-
+    
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         currentType = TableType.LIBRARY;
         prepare();

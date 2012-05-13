@@ -172,13 +172,14 @@ public class LoginForm extends javax.swing.JFrame {
         String password = new String(jPasswordField1.getPassword());
         int hashedPassword = Objects.hash(password);
         //Document foundUser = userDAO.findById(name);
-        User foundUser=userDAO.findById(name);
+        User foundUser = userDAO.findById(name);
         if (foundUser != null) {
             if (foundUser.password.equals(String.valueOf(hashedPassword))) {
                 if (adminModeCheckBox.isSelected()) {
                     jFrame = new JFrame();
                     jFrame.add(adminPanel);
                     jFrame.pack();
+                    jFrame.setLocationRelativeTo(null);
                     jFrame.addWindowListener(new MyWindowListener(this));
                     jFrame.setVisible(true);
                 } else {
@@ -187,6 +188,7 @@ public class LoginForm extends javax.swing.JFrame {
                     jFrame = new JFrame();
                     jFrame.add(userPanel);
                     jFrame.pack();
+                    jFrame.setLocationRelativeTo(null);
                     jFrame.addWindowListener(new MyWindowListener(this));
                     jFrame.setVisible(true);
                 }
@@ -222,7 +224,6 @@ public class LoginForm extends javax.swing.JFrame {
         }
         jLabel1.setText("success!");
     }//GEN-LAST:event_registerButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox adminModeCheckBox;
     private javax.swing.JLabel jLabel1;
