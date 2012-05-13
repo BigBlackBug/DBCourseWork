@@ -179,12 +179,12 @@ public class AdminPanel extends javax.swing.JPanel {
                             if (currentType == TableType.AUTHOR) {
                                 List<Book> books = adminLibraryManager.getAuthorDAO().getBooksOf(Integer.parseInt(elementAt));
                                 for (Book b : books) {
-                                    infoListModel.addElement(b.getIsbn());
+                                    infoListModel.addElement(b.isbn);
                                 }
                             } else if (currentType == TableType.BOOK) {
                                 List<Author> authors = adminLibraryManager.getBookDAO().getAuthorsOf(elementAt);
                                 for (Author a : authors) {
-                                    infoListModel.addElement(a.getName());
+                                    infoListModel.addElement(a.name);
                                 }
                                 
                             }
@@ -207,13 +207,17 @@ public class AdminPanel extends javax.swing.JPanel {
         try {
             if (currentType == TableType.AUTHOR) {
                 Author a = new Author();
-                a.setID(Integer.parseInt(line[0]));
-                a.setName(line[1]);
+                a.authorId=(Integer.parseInt(line[0]));
+                a.name=(line[1]);
+                a.phone=line[2];
                 adminLibraryManager.getAuthorDAO().updateByID(a);
             } else if (currentType == TableType.BOOK) {
                 Book b = new Book();
-                b.setIsbn(line[0]);
-                b.setPublisherId(Integer.parseInt(line[1]));
+                b.isbn=(line[0]);
+                b.publisherId=(Integer.parseInt(line[1]));
+                b.description=line[2];
+                b.name=line[3];
+                b.pagesAmount=Integer.parseInt(line[4]);
                 adminLibraryManager.getBookDAO().updateByID(b);
             } else if (currentType == TableType.DOCUMENT) {
                 Document d = new Document();
@@ -224,8 +228,10 @@ public class AdminPanel extends javax.swing.JPanel {
                 adminLibraryManager.getDocumentDAO().updateByID(d);
             } else if (currentType == TableType.PUBLISHER) {
                 Publisher p = new Publisher();
-                p.setPublisherId(Integer.parseInt(line[0]));
-                p.setName(line[1]);
+                p.publisherId=(Integer.parseInt(line[0]));
+                p.name=(line[1]);
+                p.address=line[2];
+                p.phone=line[3];
                 adminLibraryManager.getPublisherDAO().updateByID(p);
             }
         } catch (DataIntegrityViolationException ex) {

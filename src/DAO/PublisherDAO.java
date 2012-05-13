@@ -22,19 +22,22 @@ public class PublisherDAO extends SimpleJdbcDaoSupport implements DAO<Publisher>
 
     @Override
     public void insert(Publisher item) throws DuplicateKeyException {
-        getSimpleJdbcTemplate().update("insert into publisher(publisher_name) values(?)", item.getName());
+        getSimpleJdbcTemplate().update("insert into publisher(publisher_name,address,phone) "
+                + "values(?,?,?)", item.name, item.address, item.phone);
     }
 
     @Override
     public void updateByID(Publisher item) {
-        getSimpleJdbcTemplate().update("update publisher set publisher_name=? where publisher_id=?",
-                item.getName(), item.getPublisherId());
+        getSimpleJdbcTemplate().update("update publisher set publisher_name=?,"
+                + "address=?, phone=? where publisher_id=?",
+                item.name, item.address, item.phone, item.publisherId);
     }
 
     @Override
     public void delete(Object id) {
         getSimpleJdbcTemplate().update("delete from publisher where publisher_id=?", id);
     }
+
     public Publisher findByName(String id) {
         try {
             return getSimpleJdbcTemplate().queryForObject(
@@ -79,8 +82,10 @@ public class PublisherDAO extends SimpleJdbcDaoSupport implements DAO<Publisher>
         @Override
         public Publisher mapRow(ResultSet rs, int rowNum) throws SQLException {
             Publisher a = new Publisher();
-            a.setName(rs.getString("publisher_name"));
-            a.setPublisherId(rs.getInt("publisher_id"));
+            a.name=(rs.getString("publisher_name"));
+            a.publisherId=(rs.getInt("publisher_id"));
+            a.address=(rs.getString("address"));
+            a.phone=(rs.getString("phone"));
             return a;
         }
     }

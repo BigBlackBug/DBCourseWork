@@ -18,14 +18,14 @@ import org.springframework.dao.DuplicateKeyException;
  *
  * @author BigBlackBug
  */
-public class NewAuthorDialog extends JDialog{
-    
+public class NewAuthorDialog extends JDialog {
+
     private AuthorDAO authorDAO;
-    private NewDocumentPanel documentPanel;
+    private NewAuthorPanel documentPanel;
 
     public NewAuthorDialog(AuthorDAO authorDAO) {
         this.authorDAO = authorDAO;
-        this.documentPanel = new NewDocumentPanel();
+        this.documentPanel = new NewAuthorPanel();
         init();
         setLocationRelativeTo(null);
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
@@ -39,10 +39,16 @@ public class NewAuthorDialog extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String newName = documentPanel.getNameTF().getText();
+                String newPhone = documentPanel.getPhoneTF().getText();
+                if (!newPhone.matches("[1-9]+")) {
+                    documentPanel.getInfoLabel().setText("Phone number can only "
+                            + "consist of numbers");
+                    return;
+                }
                 try {
-                    authorDAO.insert(new Author(newName));
+                    authorDAO.insert(new Author(newName, newPhone));
                 } catch (DuplicateKeyException dex) {
-                    documentPanel.getjLabel2().setText("There is an author with this name");
+                    documentPanel.getInfoLabel().setText("There is an author with this name");
                 }
                 NewAuthorDialog.this.setVisible(false);
             }

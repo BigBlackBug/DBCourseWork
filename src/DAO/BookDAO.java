@@ -24,13 +24,17 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
 
     @Override
     public void insert(Book item) throws DuplicateKeyException {
-        getSimpleJdbcTemplate().update("insert into book(isbn,publisher_id) values(?,?)", item.getIsbn(), item.getPublisherId());
+        getSimpleJdbcTemplate().update("insert into book(isbn,publisher_id,"
+                + "description, name, pagesAmount) values(?,?,?,?,?)", item.isbn,
+                item.publisherId, item.description, item.name, item.pagesAmount);
     }
 
     @Override
     public void updateByID(Book item) {
-        getSimpleJdbcTemplate().update("update book set isbn=?,publisher_id=? where isbn=?",
-                item.getIsbn(), item.getPublisherId(), item.getIsbn());
+        getSimpleJdbcTemplate().update("update book set isbn=?,publisher_id=?, "
+                + "description=?, name=?, pagesAmount=? where isbn=?",
+                item.isbn, item.publisherId, item.description,
+                item.name, item.pagesAmount, item.isbn);
     }
 
     public void addAuthor(String isbn, Integer authorID) {
@@ -48,7 +52,7 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
     public void deleteAllAuthors(String isbn) {
         List<Author> authorsOf = getAuthorsOf(isbn);
         for (Author a : authorsOf) {
-            deleteAuthor(isbn, a.getID());
+            deleteAuthor(isbn, a.authorId);
         }
     }
 
@@ -58,7 +62,7 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
     }
 
     public List<Author> getAuthorsOf(String isbn) {
-        return getSimpleJdbcTemplate().query("select author.author_id,author.author_name "
+        return getSimpleJdbcTemplate().query("select author.author_id,author.author_name,author.phone "
                 + "from author join authorship on authorship.author_id=author.author_id "
                 + "where isbn=?",
                 new AuthorDAO.AuthorMapper(), isbn);
@@ -104,8 +108,11 @@ public class BookDAO extends SimpleJdbcDaoSupport implements DAO<Book> {
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
             Book a = new Book();
-            a.setIsbn(rs.getString("isbn"));
-            a.setPublisherId(rs.getInt("publisher_id"));
+            a.isbn = (rs.getString("isbn"));
+            a.publisherId = rs.getInt("publisher_id");
+            a.description = rs.getString("description");
+            a.name = rs.getString("name");
+            a.pagesAmount = rs.getInt("pagesAmount");
             return a;
         }
     }

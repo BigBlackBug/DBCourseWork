@@ -46,7 +46,7 @@ public class NewBookDialog extends JDialog {
         DefaultListModel listModel = new DefaultListModel();
         List<Author> authors = libraryManager.getAuthorDAO().getAll();
         for (Author a : authors) {
-            listModel.addElement(a.getName());
+            listModel.addElement(a.name);
         }
 
         authorList.setModel(listModel);
@@ -59,7 +59,7 @@ public class NewBookDialog extends JDialog {
         List<Publisher> publishers = libraryManager.getPublisherDAO().getAll();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
         for (Publisher p : publishers) {
-            model.addElement(p.getName());
+            model.addElement(p.name);
         }
         publisherComboBox.setModel(model);
         publisherComboBox.repaint();
@@ -87,28 +87,40 @@ public class NewBookDialog extends JDialog {
                 }
                 Integer amount = (Integer) bookPanel.getAmountSpinner().getValue();
                 if (amount <= 0) {
-                    errorLabel.setText("The amount should be a positive number");
+                    errorLabel.setText("The amount has be a positive number");
                     return;
                 }
-
+                Integer pageAmount = (Integer) bookPanel.getPageAmountSpinner().getValue();
+                if (pageAmount <= 0) {
+                    errorLabel.setText("The page amount has be a positive number");
+                    return;
+                }
+                String name = bookPanel.getNameTF().getText();
+                if (name.isEmpty()) {
+                    errorLabel.setText("name field is empty");
+                    return;
+                }
+                String description = bookPanel.getDescriptionTA().getText();
+                
                 BookDAO bookDAO = libraryManager.getBookDAO();
                 try {
-                    bookDAO.insert(new Book(isbn, libraryManager.getPublisherDAO().findByName(pub).getPublisherId()));
+                    bookDAO.insert(new Book(isbn, description, name, pageAmount, 
+                            libraryManager.getPublisherDAO().findByName(pub).publisherId));
                     for (String author : selectedAuthors) {
-                        bookDAO.addAuthor(isbn, libraryManager.getAuthorDAO().findByName(author).getID());
+                        bookDAO.addAuthor(isbn, libraryManager.getAuthorDAO().findByName(author).authorId);
                     }
                     adminPanel.prepare();
 
                     NewBookDialog.this.setVisible(false);
                 } catch (org.springframework.dao.DuplicateKeyException dex) {
                     errorLabel.setText("Duplicate key");
-                } catch (DataAccessException daex) {
+                }/* catch (DataAccessException daex) {
                     errorLabel.setText("Unknown error");
-                }
+                }*/
                 StorageManager gam = libraryManager.getStorageManager();
-                //try{
+               
                 gam.replenishLibrary(isbn, amount);
-                //}
+           
 
 
 

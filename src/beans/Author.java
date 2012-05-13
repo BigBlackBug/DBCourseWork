@@ -15,8 +15,9 @@ import javax.persistence.*;
 public class Author {
 
     private static final long serialVersionUID = 1L;
-    private Integer authorId;
-    private String name;
+    public Integer authorId;
+    public String name;
+    public String phone;
 
     public Author() {
     }
@@ -26,21 +27,9 @@ public class Author {
         this.name = name;
     }
 
-    
-    public Author(String name) {
+    public Author(String name, String phone) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getID() {
-        return authorId;
-    }
-
-    public void setID(Integer authorId) {
-        this.authorId = authorId;
+        this.phone = phone;
     }
 
     @Override
@@ -68,7 +57,4 @@ public class Author {
         return "beans.Author[ authorId=" + authorId + " ]";
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 }

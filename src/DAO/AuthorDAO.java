@@ -23,13 +23,13 @@ public class AuthorDAO extends SimpleJdbcDaoSupport implements DAO<Author> {
 
     @Override
     public void insert(Author item) throws DuplicateKeyException {
-        getSimpleJdbcTemplate().update("insert into author(author_name) values(?)", item.getName());
+        getSimpleJdbcTemplate().update("insert into author(author_name,phone) values(?,?)", item.name,item.phone);
     }
 
     @Override
     public void updateByID(Author item) {
-        getSimpleJdbcTemplate().update("update author set author_name=? where author_id=?",
-                item.getName(), item.getID());
+        getSimpleJdbcTemplate().update("update author set author_name=?, phone=? where author_id=?",
+                item.name, item.phone, item.authorId);
     }
 
     @Override
@@ -38,16 +38,21 @@ public class AuthorDAO extends SimpleJdbcDaoSupport implements DAO<Author> {
     }
 
     public List<Book> getBooksOf(Integer authorID) {
-        return getSimpleJdbcTemplate().query("select book.isbn, book.publisher_id from book join authorship on book.isbn=authorship.isbn where author_id=?",
+        return getSimpleJdbcTemplate().query("select book.isbn, book.description, "
+                + "book.name, book.pagesAmount, book.publisher_id "
+                + "from book join authorship on book.isbn=authorship.isbn where author_id=?",
                 new BookDAO.BookMapper(), authorID);
     }
     //
 
     public void addBook(Integer authorId, String isbn) {
-        List<Map<String, Object>> queryForList = getSimpleJdbcTemplate().queryForList("select * from authorship where author_id=? and isbn=?", authorId, isbn);
+        List<Map<String, Object>> queryForList = getSimpleJdbcTemplate().queryForList(
+                "select * from authorship where author_id=? and isbn=?", authorId, isbn);
         if (queryForList.isEmpty()) {
             getSimpleJdbcTemplate().update("insert into authorship(author_id,isbn) values(?,?)", authorId, isbn);
-        }else throw new DuplicateKeyException("too bad");
+        } else {
+            throw new DuplicateKeyException("too bad");
+        }
     }
 
     public void removeBook(Integer authorId, String isbn) {
@@ -96,8 +101,9 @@ public class AuthorDAO extends SimpleJdbcDaoSupport implements DAO<Author> {
         @Override
         public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
             Author a = new Author();
-            a.setName(rs.getString("author_name"));
-            a.setID(rs.getInt("author_id"));
+            a.name=(rs.getString("author_name"));
+            a.authorId=(rs.getInt("author_id"));
+            a.phone=rs.getString("phone");
             return a;
         }
     }

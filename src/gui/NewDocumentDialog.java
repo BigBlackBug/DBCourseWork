@@ -22,7 +22,7 @@ public class NewDocumentDialog extends JDialog {
 
     public NewDocumentDialog(DocumentDAO documentDAO) {
         this.documentDAO = documentDAO;
-        this.documentPanel = new NewDocumentPanel();
+        this.documentPanel =new NewDocumentPanel();
         init();
         setLocationRelativeTo(null);
         setModalityType(ModalityType.APPLICATION_MODAL);
@@ -39,7 +39,7 @@ public class NewDocumentDialog extends JDialog {
                 try {
                     documentDAO.insert(new Document(newName));
                 } catch (DuplicateKeyException dex) {
-                    documentPanel.getjLabel2().setText("There is a document with this name");
+                    documentPanel.getInfoLabel().setText("There is a document with this name");
                 }
                 NewDocumentDialog.this.setVisible(false);
             }

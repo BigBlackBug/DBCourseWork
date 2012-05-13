@@ -17,31 +17,38 @@ import org.springframework.dao.DuplicateKeyException;
  *
  * @author BigBlackBug
  */
-public class NewPublisherDialog extends JDialog{
-    
+public class NewPublisherDialog extends JDialog {
+
     private PublisherDAO publisherDAO;
-    private NewDocumentPanel documentPanel;
+    private NewPublisherPanel publisherPanel;
 
     public NewPublisherDialog(PublisherDAO publisherDAO) {
         this.publisherDAO = publisherDAO;
-        this.documentPanel = new NewDocumentPanel();
+        this.publisherPanel = new NewPublisherPanel();
         init();
         setLocationRelativeTo(null);
         setModalityType(ModalityType.APPLICATION_MODAL);
-        getContentPane().add(documentPanel);
+        getContentPane().add(publisherPanel);
         pack();
     }
 
     private void init() {
-        documentPanel.getCommitButton().addActionListener(new ActionListener() {
+        publisherPanel.getCommitButton().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newName = documentPanel.getNameTF().getText();
+                String newName = publisherPanel.getNameTF().getText();
+                String newAddress = publisherPanel.getAddressTF().getText();
+                String newPhone = publisherPanel.getPhoneTF().getText();
+                if (!newPhone.matches("[1-9]+")) {
+                    publisherPanel.getInfoLabel().setText("Phone number can only "
+                            + "consist of numbers");
+                    return;
+                }
                 try {
-                    publisherDAO.insert(new Publisher(newName));
+                    publisherDAO.insert(new Publisher(newName, newAddress, newPhone));
                 } catch (DuplicateKeyException dex) {
-                    documentPanel.getjLabel2().setText("There is a document with this name");
+                    publisherPanel.getInfoLabel().setText("There is a document with this name");
                 }
                 NewPublisherDialog.this.setVisible(false);
             }

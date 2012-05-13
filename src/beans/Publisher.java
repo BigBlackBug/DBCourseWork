@@ -15,31 +15,21 @@ import javax.persistence.*;
 public class Publisher implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Integer publisherId;
-    private String name;
+    public Integer publisherId;
+    public String name;
+    public String address;
+    public String phone;
 
-    public Publisher(String name) {
+    public Publisher(String name, String address, String phone) {
 
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        this.address = address;
+        this.phone = phone;
     }
 
     public Publisher() {
     }
-    public Integer getPublisherId() {
-        return publisherId;
-    }
-
-    public void setPublisherId(Integer publisherId) {
-        this.publisherId = publisherId;
-    }
+ 
 
     @Override
     public int hashCode() {

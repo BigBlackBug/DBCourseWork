@@ -44,7 +44,7 @@ public class NewLibraryItemPanel extends javax.swing.JPanel {
         listModel.clear();
         List<Book> all = libraryManager.getBookDAO().getAll();
         for (Book d : all) {
-            listModel.addElement(d.getIsbn());
+            listModel.addElement(d.isbn);
         }
     }
 
@@ -83,7 +83,7 @@ public class NewLibraryItemPanel extends javax.swing.JPanel {
                     infoLabel.setText("Book not found!");
                 } else {
                     for (Book b : filter) {
-                        listModel.addElement(b.getIsbn());
+                        listModel.addElement(b.isbn);
                     }
                 }
 

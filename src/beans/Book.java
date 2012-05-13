@@ -13,44 +13,34 @@ import javax.persistence.*;
  * @author BigBlackBug
  */
 public class Book implements Serializable {
+
     private static final long serialVersionUID = 1L;
-  
-    private String isbn;
-  
-    private Integer publisherId;
+    public String isbn;
+    public String description;
+    public String name;
+    public int pagesAmount;
+    public Integer publisherId;
 
     public Book() {
     }
 
-    public Book(String isbn) {
-        this.isbn = isbn;
-    }
+//    public Book(String isbn) {
+//        this.isbn = isbn;
+//    }
 
-    public Book(String isbn,Integer publisherId){
-        this(isbn);
-        this.publisherId=publisherId;
-    }
-    public void setPublisherId(java.lang.Integer publisherId) {
+//    public Book(String isbn, Integer publisherId) {
+//        this(isbn);
+//        this.publisherId = publisherId;
+//    }
+
+    public Book(String isbn, String description, String name, int pagesAmount, Integer publisherId) {
+        this.isbn = isbn;
+        this.description = description;
+        this.name = name;
+        this.pagesAmount = pagesAmount;
         this.publisherId = publisherId;
     }
     
-    
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public Integer getPublisherId() {
-        return publisherId;
-    }
-
-    public void Integer(Integer publisherId) {
-        this.publisherId = publisherId;
-    }
 
     @Override
     public int hashCode() {
@@ -76,5 +66,4 @@ public class Book implements Serializable {
     public String toString() {
         return "beans.Book[ isbn=" + isbn + " ]";
     }
-    
 }
